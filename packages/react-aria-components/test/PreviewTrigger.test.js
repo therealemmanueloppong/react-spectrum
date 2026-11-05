@@ -163,6 +163,74 @@ describe('PreviewTrigger', () => {
     expect(queryByTestId('preview')).not.toBeInTheDocument();
   });
 
+  describe('accessible name', () => {
+    function renderPreview({linkProps, popoverProps} = {}) {
+      return render(
+        <PreviewTrigger delay={0} closeDelay={0}>
+          <Link href="https://example.com" {...linkProps}>
+            Example
+          </Link>
+          <Popover data-testid="preview" {...popoverProps}>
+            <p>Preview content</p>
+          </Popover>
+        </PreviewTrigger>
+      );
+    }
+
+    it('names the preview dialog after the trigger by default', async () => {
+      let {getByRole, getByTestId} = renderPreview();
+      let link = getByRole('link');
+
+      await user.tab();
+      let preview = getByTestId('preview');
+      expect(preview).toHaveAttribute('role', 'dialog');
+      expect(link.id).toBeTruthy();
+      expect(preview).toHaveAttribute('aria-labelledby', link.id);
+      expect(getByRole('dialog', {name: 'Example'})).toBe(preview);
+    });
+
+    it('names the preview dialog after the trigger when the trigger has its own id', async () => {
+      let {getByRole, getByTestId} = renderPreview({linkProps: {id: 'my-link'}});
+      let link = getByRole('link');
+      expect(link).toHaveAttribute('id', 'my-link');
+
+      await user.tab();
+      expect(getByTestId('preview')).toHaveAttribute('aria-labelledby', 'my-link');
+      expect(getByRole('dialog', {name: 'Example'})).toBe(getByTestId('preview'));
+    });
+
+    it('lets an aria-label on the Popover name the preview dialog', async () => {
+      let {getByRole, getByTestId} = renderPreview({
+        popoverProps: {'aria-label': 'Example summary'}
+      });
+
+      await user.tab();
+      let preview = getByTestId('preview');
+      expect(preview).toHaveAttribute('aria-label', 'Example summary');
+      expect(preview).not.toHaveAttribute('aria-labelledby');
+      expect(getByRole('dialog', {name: 'Example summary'})).toBe(preview);
+    });
+
+    it('lets an aria-labelledby on the Popover name the preview dialog', async () => {
+      let {getByRole, getByTestId} = render(
+        <>
+          <span id="custom-label">Custom label</span>
+          <PreviewTrigger delay={0} closeDelay={0}>
+            <Link href="https://example.com">Example</Link>
+            <Popover data-testid="preview" aria-labelledby="custom-label">
+              <p>Preview content</p>
+            </Popover>
+          </PreviewTrigger>
+        </>
+      );
+
+      await user.tab();
+      let preview = getByTestId('preview');
+      expect(preview).toHaveAttribute('aria-labelledby', 'custom-label');
+      expect(getByRole('dialog', {name: 'Custom label'})).toBe(preview);
+    });
+  });
+
   it('is non-modal (no underlay)', async () => {
     let {getByRole, queryByTestId} = render(<TestPreviewTrigger />);
 

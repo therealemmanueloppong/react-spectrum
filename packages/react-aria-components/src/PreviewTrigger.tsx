@@ -18,6 +18,7 @@ import {OverlayTriggerStateContext} from './Dialog';
 import {PopoverContext} from './Popover';
 import {Provider} from './utils';
 import React, {JSX, ReactNode, useMemo, useRef} from 'react';
+import {useId} from 'react-aria/useId';
 import {useTooltipTriggerState} from 'react-stately/useTooltipTriggerState';
 
 export interface PreviewTriggerProps extends AriaPreviewTriggerProps {
@@ -50,6 +51,10 @@ export function PreviewTrigger(props: PreviewTriggerProps): JSX.Element {
   let triggerRef = useRef<FocusableElement>(null);
   let popoverRef = useRef<HTMLElement>(null);
   let {triggerProps, popoverProps} = usePreviewTrigger({...props, triggerRef, popoverRef}, state);
+  // Label the popover by the trigger as a fallback, like DialogTrigger does. This is done here and
+  // not in the hook so Popover can tell it apart from an aria-label or aria-labelledby that the app
+  // passes to it directly, which should win.
+  let triggerId = useId();
 
   // The Popover and usePopover expect an OverlayTriggerState. Adapt the TooltipTriggerState (which
   // provides the warmup/cooldown delay behavior) to that interface.
@@ -79,11 +84,12 @@ export function PreviewTrigger(props: PreviewTriggerProps): JSX.Element {
             isNonModal: true,
             // Skip enter/exit animations when swapping between previews during the warmup period.
             shouldSkipAnimation: state.shouldSkipAnimation,
+            'aria-labelledby': triggerId,
             ...popoverProps
           }
         ]
       ]}>
-      <FocusableProvider {...triggerProps} ref={triggerRef}>
+      <FocusableProvider {...triggerProps} id={triggerId} ref={triggerRef}>
         {props.children}
       </FocusableProvider>
     </Provider>

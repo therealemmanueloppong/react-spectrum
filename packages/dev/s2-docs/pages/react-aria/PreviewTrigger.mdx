@@ -26,7 +26,7 @@ export const description = 'Displays a non-modal preview of content on hover, fo
     return (
       <PreviewTrigger>
         <Link href={href}>@{handle}</Link>
-        <Popover style={{width: 280}} {...popoverProps}>
+        <Popover aria-label={`${name}'s profile`} style={{width: 280}} {...popoverProps}>
           <div style={{display: 'flex', gap: 8, alignItems: 'center'}}>
             <img alt="" src={avatar} style={{width: 40, height: 40, borderRadius: '50%'}} />
             <div style={{minWidth: 0}}>
@@ -77,7 +77,7 @@ export const description = 'Displays a non-modal preview of content on hover, fo
     return (
       <PreviewTrigger>
         <Link href={href}>@{handle}</Link>
-        <Popover className="w-[280px] p-2" {...popoverProps}>
+        <Popover aria-label={`${name}'s profile`} className="w-[280px] p-2" {...popoverProps}>
           <div className="flex gap-2 items-center">
             <img alt="" src={avatar} className="size-10 rounded-full shrink-0" />
             <div className="min-w-0">
@@ -138,7 +138,7 @@ function IssuePreview({number, title, status, author, href, ...props}) {
     <PreviewTrigger {...props}/* PROPS */>
       {/*- end highlight -*/}
       <Link href={href}>#{number}</Link>
-      <Popover style={{width: 280}}>
+      <Popover aria-label={`Issue #${number}`} style={{width: 280}}>
         <div style={{fontWeight: 600, fontSize: 'var(--font-size)'}}>{title}</div>
         <div style={{fontSize: 'var(--font-size-sm)', marginTop: 4}}>#{number} · {status}</div>
         <div style={{fontSize: 'var(--font-size-sm)', marginTop: 4}}>Opened by {author}</div>
@@ -191,7 +191,7 @@ import {Popover} from 'vanilla-starter/Popover';
     <span role="link">Custom trigger</span>
   </Focusable>
   {/*- end highlight -*/}
-  <Popover style={{padding: 16}}>
+  <Popover aria-label="Custom trigger preview" style={{padding: 16}}>
     This preview was triggered by a custom element.
   </Popover>
 </PreviewTrigger>
